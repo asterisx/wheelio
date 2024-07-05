@@ -1,0 +1,6 @@
+fastapi
+httpx
+python-consul
+starlette
+sse_starlette
+PyJWT

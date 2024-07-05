@@ -1,0 +1,17 @@
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
+
+COPY /status_service/insert_sample_data.py app/insert_sample_data.py
+
+WORKDIR /app
+
+COPY /core_lib/requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY /core_lib /usr/local/lib/python3.11/site-packages/core_lib
+
+COPY /network_service/requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY /status_service/insert_sample_data.py /database-uploader/insert_sample_data.py
+RUN pip install pymongo
+
+CMD python /database-uploader/insert_sample_data.py && echo "Sample data inserted successfully" && uvicorn main:app --host 0.0.0.0 --port 80 --reload

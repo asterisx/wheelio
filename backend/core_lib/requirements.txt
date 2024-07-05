@@ -1,0 +1,7 @@
+tenacity
+aio_pika
+python-consul
+pydantic==2.8.0
+fastapi
+httpx
+beanie

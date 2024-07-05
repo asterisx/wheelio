@@ -1,0 +1,234 @@
+services:
+  api_proxy:
+    build:
+      context: ./backend
+      dockerfile: api_proxy/Dockerfile.dev
+    volumes:
+      - ./backend/api_proxy/app:/app
+      - ./backend/core_lib:/core_lib
+    ports:
+      - "${BACKEND_PORT}:80"
+    environment:
+      - SERVICE_NAME=api_proxy
+      - SERVICE_HOST=api_proxy
+      - SERVICE_ID=api_proxy_1
+      - SERVICE_PORT=80
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - ACCOUNT_SERVICE_NAME=account
+      - NOTIFICATION_SERVICE_NAME=notification
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+
+    depends_on:
+      consul:
+        condition: service_started
+      account_service:
+        condition: service_started
+      network_service:
+        condition: service_started
+      notification_service:
+        condition: service_started
+      status_service:
+        condition: service_started
+    networks:
+      - proxy_network
+
+  frontend:
+    image: node:alpine
+    working_dir: /frontend
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+    command: sh -c "npm i && npm run dev -- --host 0.0.0.0 --port 3000"
+    depends_on:
+      - api_proxy
+
+  account_service:
+    build:
+      context: ./backend
+      dockerfile: account_service/Dockerfile.dev
+    volumes:
+      - ./backend/account_service/app:/app
+      - ./backend/core_lib:/core_lib
+    environment:
+      - DATABASE_URL=${ACCOUNT_SERVICE_DATABASE_URL}
+      - DATABASE_NAME=${ACCOUNT_DB_DATABASE}
+      - SALT=${ACCOUNT_SERVICE_SALT}
+      - SERVICE_NAME=account
+      - SERVICE_HOST=account_service
+      - SERVICE_ID=account_service_1
+      - SERVICE_PORT=80
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      account_db:
+        condition: service_started
+      consul:
+        condition: service_started
+    networks:
+      - account_service_network
+      - proxy_network
+      - rabbitmq_network
+
+  network_service:
+    build:
+      context: ./backend
+      dockerfile: network_service/Dockerfile.dev
+    volumes:
+      - ./backend/network_service/app:/app
+      - ./backend/core_lib:/core_lib
+    environment:
+      - DATABASE_URL=${NETWORK_SERVICE_DATABASE_URL}
+      - DATABASE_NAME=${NETWORK_DB_DATABASE}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - STATUS_QUEUE=${STATUS_QUEUE}
+      - NOTIFICATION_QUEUE=${NOTIFICATION_QUEUE}
+      - SERVICE_NAME=network
+      - SERVICE_HOST=network_service
+      - SERVICE_ID=network_service_1
+      - ACCOUNT_SERVICE_NAME=account
+      - STATUS_SERVICE_NAME=status
+      - SERVICE_PORT=80
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      network_db:
+        condition: service_started
+      consul:
+        condition: service_started
+    networks:
+      - network_service_network
+      - proxy_network
+      - rabbitmq_network
+
+  notification_service:
+    build:
+      context: ./backend
+      dockerfile: notification_service/Dockerfile.dev
+    volumes:
+      - ./backend/notification_service/app:/app
+      - ./backend/core_lib:/core_lib
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - NOTIFICATION_QUEUE=${NOTIFICATION_QUEUE}
+      - SERVICE_NAME=notification
+      - SERVICE_HOST=notification_service
+      - SERVICE_ID=notification_service_1
+      - SERVICE_PORT=80
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+      - proxy_network
+      - rabbitmq_network
+
+  status_service:
+    build:
+      context: ./backend
+      dockerfile: status_service/Dockerfile.dev
+    volumes:
+      - ./backend/status_service/app:/app
+      - ./backend/core_lib:/core_lib
+    environment:
+      - DATABASE_URL=${STATUS_SERVICE_DATABASE_URL}
+      - DATABASE_NAME=${STATUS_DB_DATABASE}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - STATUS_QUEUE=${STATUS_QUEUE}
+      - SERVICE_NAME=status
+      - SERVICE_HOST=status_service
+      - SERVICE_ID=status_service_1
+      - SERVICE_PORT=80
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      status_db:
+        condition: service_started
+      consul:
+        condition: service_started
+    networks:
+      - status_service_network
+      - proxy_network
+      - rabbitmq_network
+
+  account_db:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: ${ACCOUNT_DB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${ACCOUNT_DB_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${ACCOUNT_DB_INITDB_ROOT_PASSWORD}
+    networks:
+      - account_service_network
+
+  network_db:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: ${NETWORK_DB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${NETWORK_DB_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${NETWORK_DB_INITDB_ROOT_PASSWORD}
+    networks:
+      - network_service_network
+
+  status_db:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: ${STATUS_DB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${STATUS_DB_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${STATUS_DB_INITDB_ROOT_PASSWORD}
+    networks:
+      - status_service_network
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - rabbitmq_network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  consul:
+    image: consul:1.15
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command: "agent -dev -client=0.0.0.0"
+    networks:
+      - proxy_network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+networks:
+  proxy_network:
+    driver: bridge
+  account_service_network:
+    driver: bridge
+  network_service_network:
+    driver: bridge
+  status_service_network:
+    driver: bridge
+  rabbitmq_network:
+    driver: bridge
+  redis_network:
+    driver: bridge

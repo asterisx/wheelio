@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "python.analysis.autoImportCompletions": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "always"
+    },
+    "files.autoSave": "afterDelay",
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  }
+}
