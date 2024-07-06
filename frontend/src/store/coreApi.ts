@@ -41,6 +41,7 @@ export const coreApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.userCreds,
       }),
+      invalidatesTags: ["User"],
     }),
     loginUser: build.mutation<LoginUserApiResponse, LoginUserApiArg>({
       query: queryArg => ({
@@ -48,12 +49,14 @@ export const coreApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.userCreds,
       }),
+      invalidatesTags: ["User"],
     }),
     getCurrentUserMeGet: build.query<
       GetCurrentUserMeGetApiResponse,
       GetCurrentUserMeGetApiArg
     >({
       query: () => ({ url: `/account/me` }),
+      providesTags: ["User"],
     }),
     logoutUser: build.mutation<LogoutUserApiResponse, LogoutUserApiArg>({
       query: () => ({ url: `/account/logout`, method: "POST" }),
@@ -64,8 +67,12 @@ export const coreApi = api.injectEndpoints({
             coreApi.util.invalidateTags([
               "User",
               "Users",
-              "FriendsStatuses",
+              "Friends",
               "FriendRequests",
+              "PrivacySetting",
+              "Status",
+              "BlockedUsers",
+              "ReportedContent",
             ]),
           )
         } catch (error) {
@@ -78,8 +85,9 @@ export const coreApi = api.injectEndpoints({
       GetPrivacySettingApiArg
     >({
       query: () => ({ url: `/account/privacy-setting` }),
+      providesTags: ["PrivacySetting"],
     }),
-    SetPrivacyPost: build.mutation<
+    setPrivacyPost: build.mutation<
       SetPrivacyPostApiResponse,
       SetPrivacyPostApiArg
     >({
@@ -88,6 +96,7 @@ export const coreApi = api.injectEndpoints({
         method: "POST",
         params: { profile_private: queryArg.profile_private },
       }),
+      invalidatesTags: ["PrivacySetting"],
       async onQueryStarted({ profile_private }, { dispatch, queryFulfilled }) {
         const patchPrivacySetting = dispatch(
           coreApi.util.updateQueryData(
@@ -114,6 +123,7 @@ export const coreApi = api.injectEndpoints({
         url: `/network/send_friend_request/${queryArg.username}`,
         method: "POST",
       }),
+      invalidatesTags: ["FriendRequests", "Users"],
       async onQueryStarted({ username }, { dispatch, queryFulfilled }) {
         const patchAllUsers = dispatch(
           coreApi.util.updateQueryData("getAllUsers", { search: "" }, draft => {
@@ -139,6 +149,7 @@ export const coreApi = api.injectEndpoints({
         url: `/network/accept_friend_request/${queryArg.username}`,
         method: "POST",
       }),
+      invalidatesTags: ["FriendRequests", "Friends", "Users"],
       async onQueryStarted({ username }, { dispatch, queryFulfilled }) {
         const patchFriendRequests = dispatch(
           coreApi.util.updateQueryData(
@@ -184,21 +195,25 @@ export const coreApi = api.injectEndpoints({
       GetFriendRequestsApiArg
     >({
       query: () => ({ url: `/network/requests` }),
+      providesTags: ["FriendRequests"],
     }),
     getFriends: build.query<GetFriendsApiResponse, GetFriendsApiArg>({
       query: () => ({ url: `/network/friends` }),
+      providesTags: ["Friends"],
     }),
     getAllUsers: build.query<GetAllUsersApiResponse, GetAllUsersApiArg>({
       query: queryArg => ({
         url: `/network/all-profiles`,
         params: { search: queryArg.search },
       }),
+      providesTags: ["Users"],
     }),
     blockUser: build.mutation<BlockUserApiResponse, BlockUserApiArg>({
       query: queryArg => ({
         url: `/network/block_user/${queryArg.username}`,
         method: "POST",
       }),
+      invalidatesTags: ["Friends", "Users", "FriendRequests"],
       async onQueryStarted({ username }, { dispatch, queryFulfilled }) {
         const patchFriendsStatuses = dispatch(
           coreApi.util.updateQueryData("getFriends", undefined, draft => {
@@ -237,6 +252,7 @@ export const coreApi = api.injectEndpoints({
         url: `/network/report_content/${username}`,
         method: "POST",
       }),
+      invalidatesTags: ["ReportedContent", "Users"],
       async onQueryStarted({ username }, { dispatch, queryFulfilled }) {
         const patchAllUsers = dispatch(
           coreApi.util.updateQueryData("getAllUsers", { search: "" }, draft => {
@@ -256,6 +272,7 @@ export const coreApi = api.injectEndpoints({
     }),
     getStatus: build.query<GetStatusApiResponse, GetStatusApiArg>({
       query: () => ({ url: `/status/get` }),
+      providesTags: ["Status"],
     }),
     createStatus: build.mutation<CreateStatusApiResponse, CreateStatusApiArg>({
       query: queryArg => ({
@@ -263,6 +280,7 @@ export const coreApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.status,
       }),
+      invalidatesTags: ["Status"],
       async onQueryStarted({ status }, { dispatch, queryFulfilled }) {
         const patchStatus = dispatch(
           coreApi.util.updateQueryData("getStatus", undefined, draft => {

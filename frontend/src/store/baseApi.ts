@@ -12,9 +12,11 @@ export const baseApi = createApi({
   tagTypes: [
     "User",
     "Users",
-    "FriendsStatuses",
+    "Friends",
     "FriendRequests",
-    "AllUsers",
+    "PrivacySetting",
     "Status",
+    "BlockedUsers",
+    "ReportedContent",
   ],
 })
