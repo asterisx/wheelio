@@ -38,7 +38,7 @@
 - So, the choice was made with an understanding of how an app like this grows and how domains become concerns of their own.
 
 ## Issues
-- Notifications as of now are a hit and miss.
+- Notifications as of now are a hit and miss. They sometimes arrive late, a bit of more resiliency needs to be built than the current implementation. This is not hard to do but will take time to fix so I have left it as is for this coding assesement
 
 ## Build Instructions
 
