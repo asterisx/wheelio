@@ -1,15 +1,15 @@
 ## Features
-- [x] Each service has independence in terms of its data, through a separate node for the database (for scalability and reliability), but the schema owner is the service.
-- [x] Synchronization of schemas and models shared across services can be achieved by using gRPC or API Schemas.
-- [x] For this coding challenge, gRPC is not used; instead, there are repeated fields in a few places.
-- [x] The notification service is currently not saving notifications, which can be implemented easily but is not part of the requirements.
-- [x] For internal API calls, Consul is being used.
-- [x] Docker is used for setting up services and inter-service communication via docker-compose. For production, Kubernetes with a service discovery mechanism and safer environment variable injection through CI/CD pipelines would be used.
-- [x] Statuses are in the user service but are fetched from the network_service for independence and scalability. You will see services working together to deliver data.
-- [x] Shared packages are shared locally, but versioning is missing. Versioning is important in a microservice architecture to avoid breaking changes and to upgrade/downgrade packages without breaking services.
-- [x] Inter-microservice communication should ideally be done with gRPC with mTLS (if security is a concern) and not with HTTP calls.
-- [x] RabbitMQ is used for event management and SSE is synced up with RabbitMQ to send notifications. This allows domain separation of concerns which is an important implementation detail.
-- [x] A FastAPI proxy sits in front of all the services which manages session management. This is not the best implementation; a more suitable solution would be using Nginx or something else to direct backward requests forwards. However, for a coding assessment, it is fine.
+- Each service has independence in terms of its data, through a separate node for the database (for scalability and reliability), but the schema owner is the service.
+- Synchronization of schemas and models shared across services can be achieved by using gRPC or API Schemas.
+- For this coding challenge, gRPC is not used; instead, there are repeated fields in a few places.
+- The notification service is currently not saving notifications, which can be implemented easily but is not part of the requirements.
+- For internal API calls, Consul is being used.
+- Docker is used for setting up services and inter-service communication via docker-compose. For production, Kubernetes with a service discovery mechanism and safer environment variable injection through CI/CD pipelines would be used.
+- Statuses are in the user service but are fetched from the network_service for independence and scalability. You will see services working together to deliver data.
+- Shared packages are shared locally, but versioning is missing. Versioning is important in a microservice architecture to avoid breaking changes and to upgrade/downgrade packages without breaking services.
+- Inter-microservice communication should ideally be done with gRPC with mTLS (if security is a concern) and not with HTTP calls.
+- RabbitMQ is used for event management and SSE is synced up with RabbitMQ to send notifications. This allows domain separation of concerns which is an important implementation detail.
+- A FastAPI proxy sits in front of all the services which manages session management. This is not the best implementation; a more suitable solution would be using Nginx or something else to direct backward requests forwards. However, for a coding assessment, it is fine.
 
 ## Further Improvements
 - [x] Multiple docker-compose files, using extend to make it just about digetable. Right now it's a quick and dirty implementation.
@@ -127,6 +127,6 @@ It took me 12 hours to build this.
 
 ### Submission Guidelines
 
-- [-] Provide all source code via a GitLab or GitHub repository with detailed commit history.
-      Detailed commit history is missing as this assesement was done in 3 sitings while in between moving places.
+- [x] Provide all source code via a GitLab or GitHub repository with detailed commit history.
+*Detailed commit history is missing as this assesement was done in 3 sittings.*
 - [x] Document your assumptions.
