@@ -6,13 +6,12 @@ from core_lib.consul import get_consul_service_url
 from core_lib.utils import fetch
 from core_lib.models import UserBase
 from core_lib.schemas import StatusDTO
-from schemas import BlockedUser, ReportedContent
+from schemas import BlockedUser, ReportedContent, Friend
 
 STATUS_SERVICE_URL = get_consul_service_url(environ["STATUS_SERVICE_NAME"])
 ACCOUNT_SERVICE_URL = get_consul_service_url(environ["ACCOUNT_SERVICE_NAME"])
 
 router = APIRouter()
-
 
 @router.post(
     "/block_user/{username}",
@@ -39,6 +38,17 @@ async def block_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+
+    friend = await Friend.find_one(
+        Friend.username == current_user_name, Friend.friend_username == username
+    )
+    if friend:
+        await friend.delete()
+        reverse_friend = await Friend.find_one(
+            Friend.username == username, Friend.friend_username == current_user_name
+        )
+        if reverse_friend:
+            await reverse_friend.delete()
 
     blocked_user = BlockedUser(
         blocker_username=current_user_name, blocked_username=username
