@@ -76,7 +76,7 @@ async def report_content(
     ),
 ):
     user = await fetch(
-        url=f"{get_consul_service_url(ACCOUNT_SERVICE_URL)}/user-info/{username}",
+        url=f"{ACCOUNT_SERVICE_URL}/user-info/{username}",
         response_type=UserBase,
     )
     if not user:
@@ -88,12 +88,12 @@ async def report_content(
         response_type=List[StatusDTO],
         json=[username],
     )
-    user_status = status_response[0].text if status_response else None
+    user_status = status_response[0].status if status_response else None
 
     reported_content = ReportedContent(
         reporter_username=current_user_name,
         reported_username=username,
-        status=user_status,
+        content=user_status,
     )
     await reported_content.insert()
 
