@@ -5,7 +5,7 @@ from core_lib.models import UserBase
 
 class UserStatus(BaseModel):
     text: str = Field(None, description="Status text of the user")
-    is_reported_by_user: bool = Field(
+    is_reported_by_current_user: bool = Field(
         False, description="Indicates if the status is reported by current user"
     )
 
@@ -17,9 +17,6 @@ class Profile(UserBase):
     )
     is_friend_request_requested: bool = Field(
         ..., description="Indicates if a friend request has been requested"
-    )
-    is_reported_by_user: bool = Field(
-        False, description="Indicates if the current user has reported this user"
     )
     status: Optional[UserStatus]
 

@@ -82,7 +82,6 @@ export type Profile = {
   is_friend: boolean
   is_friend_request_pending: boolean
   is_friend_request_requested: boolean
-  is_reported_by_user?: boolean
   status?: UserStatus | null
 }
 export type EventType = "friend_request" | "friend_request_accepted" | "status"

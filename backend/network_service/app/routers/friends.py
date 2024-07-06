@@ -75,7 +75,7 @@ async def get_friends(
             status = (
                 UserStatus(
                     text=friend_status,
-                    is_reported_by_user=friend in reported_users
+                    is_reported_by_current_user=friend in reported_users
                     and friend_status == reported_users.get(friend)
                 )
                 if friend_status is not None

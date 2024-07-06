@@ -135,7 +135,7 @@ async def get_all_profiles(
             status = (
                 UserStatus(
                     text=user_status,
-                    is_reported_by_user=user.username in reported_content
+                    is_reported_by_current_user=user.username in reported_content
                     and user_status == reported_content.get(user.username),
                 )
                 if user_status is not None
@@ -154,7 +154,7 @@ async def get_all_profiles(
             status = (
                 UserStatus(
                     text=user_status,
-                    is_reported_by_user=False
+                    is_reported_by_current_user=False
                 )
                 if user_status is not None
                 else None
