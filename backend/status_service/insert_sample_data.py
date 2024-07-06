@@ -24,7 +24,6 @@ def insert_sample_data():
             {"username": "hank_yellow", "status": "I hate dogs!"},
         ]
 
-         # Use bulk write with upsert to avoid conflicts
         db.Status.bulk_write([
             UpdateOne({"username": status["username"]}, {"$set": status}, upsert=True)
             for status in statuses
