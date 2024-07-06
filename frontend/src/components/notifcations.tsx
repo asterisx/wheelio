@@ -34,42 +34,41 @@ export const WithNotifications = (WrappedComponent: React.ComponentType) => {
   const isLoggedIn = useIsLoggedIn()
 
   useEffect(() => {
-    if (!isLoggedIn) return
-
-    const connectEventSource = () => {
-      const eventSource = new EventSource(
-        "http://localhost:8000/notification",
-        {
+    let eventSource: EventSource | null = null
+    setMessages([])
+    if (isLoggedIn) {
+      const connectEventSource = () => {
+        eventSource = new EventSource("http://localhost:8000/notification", {
           withCredentials: true,
-        },
-      )
+        })
 
-      eventSource.onmessage = event => {
-        const dataString = event.data.startsWith("data: ")
-          ? event.data.slice(6)
-          : event.data
-        const data = JSON.parse(dataString)
-        console.log(data)
-        const newMessage = {
-          id: Date.now() + Math.random(),
-          data,
+        eventSource.onmessage = event => {
+          const dataString = event.data.startsWith("data: ")
+            ? event.data.slice(6)
+            : event.data
+          const data = JSON.parse(dataString)
+          console.log(data)
+          const newMessage = {
+            id: Date.now() + Math.random(),
+            data,
+          }
+          setMessages(prevMessages => [...prevMessages, newMessage])
         }
-        setMessages(prevMessages => [...prevMessages, newMessage])
+
+        eventSource.onerror = error => {
+          console.error("EventSource failed:", error)
+          eventSource?.close()
+          setTimeout(connectEventSource, 5000)
+        }
+
+        return eventSource
       }
 
-      eventSource.onerror = error => {
-        console.error("EventSource failed:", error)
-        eventSource.close()
-        setTimeout(connectEventSource, 5000)
-      }
-
-      return eventSource
+      eventSource = connectEventSource()
     }
 
-    const eventSource = connectEventSource()
-
     return () => {
-      eventSource.close()
+      eventSource?.close()
     }
   }, [isLoggedIn])
 
