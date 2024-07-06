@@ -6,10 +6,12 @@ import {
   Button,
   Box,
   Avatar,
+  Tooltip,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
+import ReportIcon from "@mui/icons-material/Report"
 import {
   useAcceptFriendRequestMutation,
   useSendFriendRequestMutation,
@@ -122,14 +124,32 @@ export const ProfileCard: React.FC<Profile> = ({
             {username}
           </Typography>
           {status && (
-            <Typography
-              variant="body2"
-              color={
-                status.is_reported_by_current_user ? "error" : "text.secondary"
+            <Tooltip
+              title={
+                status.is_reported_by_current_user
+                  ? "This status has been reported by you."
+                  : ""
               }
             >
-              {status.text}
-            </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: status.is_reported_by_current_user
+                    ? "error.main"
+                    : "text.secondary",
+                  textDecoration: status.is_reported_by_current_user
+                    ? "line-through"
+                    : "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                }}
+              >
+                {status.is_reported_by_current_user && <ReportIcon />}
+                {status.text}
+              </Typography>
+            </Tooltip>
           )}
           <Box sx={{ mt: 2 }}>
             {is_friend ? (
@@ -187,3 +207,4 @@ export const ProfileCard: React.FC<Profile> = ({
     </>
   )
 }
+
