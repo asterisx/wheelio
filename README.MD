@@ -49,6 +49,8 @@
 - Documentation is available via Swagger at `http://localhost:8000/docs` once docker-compose finishes,
 frontend is serviced at `http://localhost:3000`.
 
+There are some sample accounts already created. You can try: john_doe, password123
+
 ## Full Stack Developer Technical Assignment
 
 ### Technologies
