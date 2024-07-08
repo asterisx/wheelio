@@ -1,4 +1,5 @@
 ## Features
+
 - Each service has independence in terms of its data, through a separate node for the database (for scalability and reliability), but the schema owner is the service.
 - Synchronization of schemas and models shared across services can be achieved by using gRPC or API Schemas.
 - For this coding challenge, gRPC is not used; instead, there are repeated fields in a few places.
@@ -12,15 +13,17 @@
 - A FastAPI proxy sits in front of all the services which manages session management. This is not the best implementation; a more suitable solution would be using Nginx or something else to direct backward requests forwards. However, for a coding assessment, it is fine.
 
 ## Further Improvements
-- [x] Multiple docker-compose files, using extend to make it just about digetable. Right now it's a quick and dirty implementation.
-- [x] Implement a more robust service health check.
-- [x] Implement versioning.
-- [x] Use aliases for packages and local package management.
-- [x] Augment service discovery with OpenAPI standards for internal use.
-- [x] Implement graceful error handling for improved reporting.
-- [x] Improve robustness, reliability, and fail-safe mechanisms across services.
+
+- Multiple docker-compose files, using extend to make it just about digetable. Right now it's a quick and dirty implementation.
+- Implement a more robust service health check.
+- Implement versioning.
+- Use aliases for packages and local package management.
+- Augment service discovery with OpenAPI standards for internal use.
+- Implement graceful error handling for improved reporting.
+- Improve robustness, reliability, and fail-safe mechanisms across services.
 
 ## Choices
+
 - Inter-service communication is done via HTTP calls for this coding challenge for quicker implementation.
 - Docker-compose is used for setting up services and inter-service communication.
 - Shared packages are built locally without versioning.
@@ -38,6 +41,7 @@
 - So, the choice was made with an understanding of how an app like this grows and how domains become concerns of their own.
 
 ## Issues
+
 - Notifications as of now are a hit and miss. They sometimes arrive late, a bit of more resiliency needs to be built than the current implementation. This is not hard to do but will take time to fix so I have left it as is for this coding assesement
 
 ## Build Instructions
@@ -46,8 +50,7 @@
 
 ## Documentation
 
-- Documentation is available via Swagger at `http://localhost:8000/docs` once docker-compose finishes,
-frontend is serviced at `http://localhost:3000`.
+- Documentation is available via Swagger at `http://localhost:8000/docs` once docker-compose finishes, frontend is served at `http://localhost:3000`.
 
 There are some sample accounts already created. You can try: john_doe, password123
 
@@ -128,5 +131,5 @@ It took me 12 hours to build this.
 ### Submission Guidelines
 
 - [x] Provide all source code via a GitLab or GitHub repository with detailed commit history.
-*Detailed commit history is missing as this assesement was done in 3 sittings.*
+      _Detailed commit history is missing as this assesement was done in few sittings._
 - [x] Document your assumptions.

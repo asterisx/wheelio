@@ -3,7 +3,7 @@ from consul import Consul, Check
 from fastapi import HTTPException
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-# TODO SHOWS RECEIVE THESE FROM CONSUMER CODE AND NOT get them directly.
+# TODO Recieve these from consumer and not environment variables.
 SERVICE_NAME = environ["SERVICE_NAME"]
 SERVICE_ID = environ["SERVICE_ID"]
 SERVICE_HOST = environ["SERVICE_HOST"]

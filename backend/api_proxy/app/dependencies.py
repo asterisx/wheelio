@@ -11,8 +11,6 @@ from core_lib.consul import get_consul_service_url
 from sessions import validate_session
 
 
-# TODO: This needs to be divided and go into seperate files.
-# TODO: Also some of these vars would be probably better in Redis
 ACCOUNT_SERVICE_NAME: str = environ["ACCOUNT_SERVICE_NAME"]
 NOTIFICATION_SERVICE_NAME: str = environ["NOTIFICATION_SERVICE_NAME"]
 
