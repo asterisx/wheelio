@@ -47,7 +47,6 @@ export const WithNotifications = (WrappedComponent: React.ComponentType) => {
             ? event.data.slice(6)
             : event.data
           const data = JSON.parse(dataString)
-          console.log(data)
           const newMessage = {
             id: Date.now() + Math.random(),
             data,

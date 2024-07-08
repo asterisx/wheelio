@@ -45,7 +45,7 @@ services:
       - "${FRONTEND_PORT}:3000"
     environment:
       - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
-    command: sh -c "npm i && npm run dev -- --host 0.0.0.0 --port 3000"
+    command: sh -c "npm i && npm run dev"
     depends_on:
       - api_proxy
 
@@ -192,13 +192,14 @@ services:
       - status_service_network
 
   rabbitmq:
-    image: rabbitmq:management
+    image: rabbitmq:3
     ports:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
     networks:
       - rabbitmq_network
     healthcheck:
